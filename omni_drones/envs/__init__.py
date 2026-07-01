@@ -35,6 +35,6 @@ try:
     from .single import Forest, Pinball
 except ModuleNotFoundError:
     print(
-        "To run the environments which use `ContactSensor` and `RayCaster`,"
-        "please install Isaac Lab (https://github.com/isaac-sim/IsaacLab)."
+        "To run Forest (RayCaster) and Pinball (ContactSensor) tasks, "
+        "please install Isaac Lab 2.2+ (https://github.com/isaac-sim/IsaacLab)."
     )

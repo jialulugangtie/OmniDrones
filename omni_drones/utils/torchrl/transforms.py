@@ -34,12 +34,14 @@ from torchrl.envs.transforms import (
     FlattenObservation,
     CatTensors
 )
+from omni_drones.utils.torchrl.specs import (
+    DiscreteTensorSpec,
+    MultiDiscreteTensorSpec,
+)
 from torchrl.data import (
     TensorSpec,
     BoundedTensorSpec,
     UnboundedContinuousTensorSpec,
-    DiscreteTensorSpec,
-    MultiDiscreteTensorSpec,
     CompositeSpec,
 )
 from .env import AgentSpec

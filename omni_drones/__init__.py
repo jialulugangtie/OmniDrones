@@ -31,31 +31,32 @@ CONFIG_PATH = os.path.join(os.path.dirname(__file__), os.path.pardir, "cfg")
 
 
 def init_simulation_app(cfg):
-    # launch the simulator
+    # launch the simulator (Isaac Sim 5.0 pip install uses default app template)
     config = {"headless": cfg["headless"], "anti_aliasing": 1}
-    # load cheaper kit config in headless
-    # if cfg.headless:
-    #     app_experience = f"{os.environ['EXP_PATH']}/omni.isaac.sim.python.gym.headless.kit"
-    # else:
-    #     app_experience = f"{os.environ['EXP_PATH']}/omni.isaac.sim.python.kit"
-    app_experience = f"{os.environ['EXP_PATH']}/omni.isaac.sim.python.kit"
-    simulation_app = SimulationApp(config, experience=app_experience)
-    # simulation_app = SimulationApp(config)
+    exp_path = os.environ.get("EXP_PATH")
+    if exp_path:
+        app_experience = f"{exp_path}/omni.isaac.sim.python.kit"
+        simulation_app = SimulationApp(config, experience=app_experience)
+    else:
+        simulation_app = SimulationApp(config)
     return simulation_app
 
 
-def _get_shapes(self: TensorDict):
-    return {
-        k: v.shape if isinstance(v, torch.Tensor) else v.shapes for k, v in self.items()
-    }
+if not hasattr(TensorDict, "shapes") or not isinstance(
+    getattr(TensorDict, "shapes", None), property
+):
 
+    def _get_shapes(self: TensorDict):
+        return {
+            k: v.shape if isinstance(v, torch.Tensor) else v.shapes
+            for k, v in self.items()
+        }
 
-def _get_devices(self: TensorDict):
-    return {
-        k: v.device if isinstance(v, torch.Tensor) else v.devices
-        for k, v in self.items()
-    }
+    def _get_devices(self: TensorDict):
+        return {
+            k: v.device if isinstance(v, torch.Tensor) else v.devices
+            for k, v in self.items()
+        }
 
-
-TensorDict.shapes = property(_get_shapes)
-TensorDict.devices = property(_get_devices)
+    TensorDict.shapes = property(_get_shapes)
+    TensorDict.devices = property(_get_devices)

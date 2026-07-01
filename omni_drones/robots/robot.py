@@ -26,13 +26,13 @@ import os.path as osp
 from contextlib import contextmanager
 from typing import Dict, Sequence, Type
 
-import omni.isaac.core.utils.prims as prim_utils
-import omni.isaac.core.utils.torch as torch_utils
+import isaacsim.core.utils.prims as prim_utils
+import isaacsim.core.utils.torch as torch_utils
 
 import omni.timeline
 import torch
 from omni_drones.views import ArticulationView, RigidPrimView
-from omni.isaac.core.simulation_context import SimulationContext
+from isaacsim.core.api.simulation_context import SimulationContext
 from torchrl.data import TensorSpec
 
 import omni_drones.utils.kit as kit_utils

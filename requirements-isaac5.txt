@@ -1,0 +1,26 @@
+# OmniDrones on Isaac Sim 5.0 + Isaac Lab 2.2.2 (Python 3.11, Linux)
+# Install Isaac Sim and Isaac Lab first — see docs/source/installation.rst
+
+# Core ML stack (match Isaac Lab 2.2 / Isaac Sim 5.0)
+torch==2.7.0
+torchvision==0.22.0
+
+# RL stack — pin a tested combination; adjust if import errors occur
+tensordict>=0.7.0,<0.12.0
+torchrl>=0.7.0,<0.12.0
+
+# Isaac Sim (install before OmniDrones if not using Isaac Lab installer)
+# isaacsim[all,extscache]==5.0.0  --extra-index-url https://pypi.nvidia.com
+
+# OmniDrones runtime deps (also declared in setup.py)
+hydra-core
+omegaconf
+wandb
+imageio
+plotly
+einops
+pandas
+moviepy
+av
+setproctitle
+matplotlib

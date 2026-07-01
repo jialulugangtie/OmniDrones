@@ -26,10 +26,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tensordict.nn import TensorDictModule
 
-from torchrl.data import (
-    DiscreteTensorSpec,
-    TensorDictReplayBuffer
-)
+from torchrl.data import TensorDictReplayBuffer
+from omni_drones.utils.torchrl.specs import DiscreteTensorSpec
 from torchrl.data.replay_buffers.storages import LazyTensorStorage
 from torchrl.data.replay_buffers.samplers import RandomSampler
 

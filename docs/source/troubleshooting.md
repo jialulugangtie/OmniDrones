@@ -7,8 +7,8 @@
 ## Q: Can I use Python versions other than what is shipped with Omniverse?
 
 A: Unfortunately, no. Some parts of Isaac Sim are compiled with a specific
-Python version. Currently, Isaac Sim 2022.\* supports Python 3.7 and
-Isaac Sim 2023.\*, 4.* supports Python 3.10.
+Python version. Currently, Isaac Sim 5.* requires **Python 3.11**.
+Isaac Sim 2023.\*, 4.* used Python 3.10, and Isaac Sim 2022.\* used Python 3.7.
 
 ## GPU Driver-related Issues
 
@@ -77,17 +77,10 @@ conda clean --all
 
 ## Isaac Sim-related Issues
 
-### TypeError: ArticulationView.get_world_poses() got an unexpected keyword argument 'usd'
+### TypeError: get_world_poses() got an unexpected keyword argument 'usd'
 
-If you encounter the unexpected keyword error in Isaac Sim 4.*, remove **usd=usd** from **xform_prim_view.py**.
-
-```console
-# open /${HOME}/.local/share/ov/pkg/isaac-sim-4.1.0/exts/omni.isaac.core/omni/isaac/core/prims/xform_prim_view.py
-# go to line 189 (for 4.1.0), 184 (for 4.0.0)
-
-# L184
-# default_positions, default_orientations = self.get_world_poses(usd=usd)
-
-# remove usd=usd as shown below
-# default_positions, default_orientations = self.get_world_poses()
-```
+This was a known Isaac Sim 4.x issue in upstream Isaac Core. OmniDrones 0.2+
+targets Isaac Sim 5.0 with the ``isaacsim.*`` APIs and custom view wrappers in
+``omni_drones/views``. If you still see this error on an older install, upgrade
+Isaac Sim or remove the ``usd=usd`` argument in the upstream ``xform_prim_view.py``
+as described in legacy Isaac Sim 4.1 docs.

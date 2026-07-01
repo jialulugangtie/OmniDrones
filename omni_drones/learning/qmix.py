@@ -28,9 +28,7 @@ from torch.func import vmap
 from tensordict import TensorDict
 from tensordict.utils import expand_right
 from tensordict.nn import TensorDictModule, TensorDictSequential
-from torchrl.data import (
-    DiscreteTensorSpec,
-)
+from omni_drones.utils.torchrl.specs import DiscreteTensorSpec
 from .modules.rnn import GRU
 from .modules.networks import ENCODERS_MAP, MLP
 from .common import MyBuffer, soft_update, make_encoder

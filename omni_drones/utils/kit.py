@@ -8,12 +8,11 @@ import math
 from typing import Optional, Sequence
 
 import carb
-import omni.isaac.core.utils.nucleus as nucleus_utils
-import omni.isaac.core.utils.prims as prim_utils
+import isaacsim.core.utils.nucleus as nucleus_utils
+import isaacsim.core.utils.prims as prim_utils
 import omni.kit
-from omni.isaac.core.materials import PhysicsMaterial
-from omni.isaac.core.prims import GeometryPrim
-from omni.isaac.version import get_version
+from isaacsim.core.api.materials import PhysicsMaterial
+from isaacsim.core.prims import SingleGeometryPrim as GeometryPrim
 from pxr import Gf, PhysxSchema, UsdPhysics
 
 
@@ -53,9 +52,11 @@ def create_ground_plane(
     if "usd_path" in kwargs:
         usd_path = kwargs["usd_path"]
     else:
-        # get path to the nucleus server
-        # assets_root_path = nucleus_utils.get_assets_root_path()
-        assets_root_path = "http://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.1"
+        assets_root_path = nucleus_utils.get_assets_root_path()
+        if assets_root_path is None:
+            assets_root_path = (
+                "http://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0"
+            )
         print("Assets root path: ", assets_root_path)
         if assets_root_path is None:
             carb.log_error("Unable to access the Isaac Sim assets folder on Nucleus server.")
@@ -102,12 +103,7 @@ def create_ground_plane(
     # Warning: This is specific to the default grid plane asset.
     ambient_light = kwargs.get("ambient_light", True)
     if ambient_light:
-        # check isaacsim version to determine the attribute name
-        attributes = {"intensity": 600.0}
-        isaacsim_version = get_version()
-        if int(isaacsim_version[2]) != 2022:
-            attributes = {f"inputs:{k}": v for k, v in attributes.items()}
-        # create light prim
+        attributes = {"inputs:intensity": 600.0}
         prim_utils.create_prim(f"{prim_path}/AmbientLight", "DistantLight", attributes=attributes)
 
 

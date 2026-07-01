@@ -36,11 +36,10 @@ from torch.optim import lr_scheduler
 from torchrl.data import (
     BoundedTensorSpec,
     CompositeSpec,
-    MultiDiscreteTensorSpec,
-    DiscreteTensorSpec,
     TensorSpec,
     UnboundedContinuousTensorSpec as UnboundedTensorSpec,
 )
+from omni_drones.utils.torchrl.specs import DiscreteTensorSpec, MultiDiscreteTensorSpec
 
 from omni_drones.utils.torchrl.env import AgentSpec
 

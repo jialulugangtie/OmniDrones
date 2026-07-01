@@ -1,94 +1,58 @@
-Workstation Installation
-========================
+Workstation Installation (Isaac Sim 5.0 + Isaac Lab 2.2.2)
+=============================================================
 
-Follow the `Omniverse Isaac Sim documentation <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_workstation.html>`_ to install the desired Isaac Sim release.
-Unfortunately, Windows is not supported.
+This branch targets **Isaac Sim 5.0**, **Isaac Lab 2.2.2**, and **Python 3.11** on
+**Ubuntu 22.04 / 24.04**. See `requirements-isaac5.txt` for the recommended dependency
+matrix.
 
-Set the following environment variables to your ``~/.bashrc`` or ``~/.zshrc`` files:
-
-.. code-block:: bash
-
-    # Isaac Sim root directory
-    export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac-sim-*"
-    # for example
-    # export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac-sim-2023.1.0-hotfix"
-    # export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac-sim-2023.1.1"
-    # export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac-sim-4.0.0"
-    # export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac-sim-4.1.0"
-
-where ``*`` corresponds to the Isaac Sim version. Remember to run `source ~/.bashrc` before you proceed.
-
-Although Isaac Sim comes with a built-in Python environment, we recommend using a seperate conda environment which is more flexible. We provide scripts to automate environment setup when activating/deactivating a conda environment at ``OmniDrones/conda_setup``.
-
-.. seealso::
-
-    `Managing Conda Environments <https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#macos-and-linux>`_ .
+We recommend the pip-based workflow from the
+`Isaac Lab installation guide <https://isaac-sim.github.io/IsaacLab/v2.2.0/source/setup/installation/pip_installation.html>`_.
 
 .. code-block:: bash
 
-    conda create -n sim python=3.10 # for isaac-sim-2022.*, use python=3.7
-    conda activate sim
+    conda create -n omnidrones python=3.11
+    conda activate omnidrones
+    pip install --upgrade pip
 
-    # make sure the conda environment is activated by checking $CONDA_PREFIX
-    # then, at OmniDrones/
-    cp -r conda_setup/etc $CONDA_PREFIX
-    # re-activate the environment
-    conda activate sim
+    # PyTorch for Isaac Sim 5.0 (CUDA 12.8)
+    pip install torch==2.7.0 torchvision==0.22.0 --index-url https://download.pytorch.org/whl/cu128
 
-    # verification
-    python -c "from isaacsim import SimulationApp" # use omni.isaac.kit instead of isaacsim for isaac-sim-2022.*, isaac-sim-2023.*
-    # which torch is being used
-    python -c "import torch; print(torch.__path__)"
+    # Isaac Sim 5.0
+    pip install "isaacsim[all,extscache]==5.0.0" --extra-index-url https://pypi.nvidia.com
 
-The next step is to install `Isaac Lab <https://github.com/isaac-sim/IsaacLab>`_ .
-
-.. code-block:: bash
-
+    # Isaac Lab 2.2.2
     sudo apt install cmake build-essential
-
-    # Cloning Isaac Lab
-    git clone git@github.com:isaac-sim/IsaacLab.git
-
-    # If you already set ISAACSIM_PATH, you don't need to create symbolic link.
-    # ln -s ${HOME}/.local/share/ov/pkg/isaac-sim-4.1.0 _isaac_sim
-
-    # usd-core==23.11 is for nvidia-srl-usd 0.14.0, nvidia-srl-usd-to-urdf 0.6.0 requires usd-core <24.00, >=21.11
-    # lxml==4.9.4 is for nvidia-srl-usd-to-urdf 0.6.0 requires lxml <5.0.0, >=4.9.2
-    # tqdm is for nvidia-srl-usd 0.14.0 requires tqdm <5.0.0, >=4.63.0
-    # xxhash is for 50x faster cache checks
-    conda activate sim
-    pip install usd-core==23.11 lxml==4.9.4 tqdm xxhash
-
-    # Install Isaac Lab
-    # at IsaacLab/
+    git clone https://github.com/isaac-sim/IsaacLab.git
+    cd IsaacLab
+    git checkout v2.2.2
     ./isaaclab.sh --install
 
-Finally, install **OmniDrones** in editable mode (which automatically installs other
-required dependencies):
+    # OmniDrones
+    cd /path/to/OmniDrones
+    pip install -e .
+
+Verify the stack:
 
 .. code-block:: bash
 
-    # at OmniDrones/
-    pip install -e .
+    python -c "from isaacsim import SimulationApp; import isaaclab; print('OK')"
 
-To verify the installation, run
+Run a smoke test:
 
 .. code-block:: bash
 
     cd scripts
-    python train.py algo=ppo headless=true wandb.entity=YOUR_WANDB_ENTITY
+    python train.py task=Hover algo=ppo headless=true total_frames=1000 wandb.mode=disabled
 
-In general, YOUR_WANDB_ENTITY is your wandb ID.
-If you don't want to add arguments every time, edit ``scripts/train.yaml``
+Forest and Pinball tasks require Isaac Lab sensors (RayCaster / ContactSensor) and are
+registered only when ``isaaclab`` is importable.
 
-If you encounter the following error,
-try `TypeError: ArticulationView.get_world_poses() got an unexpected keyword argument 'usd' <troubleshooting.html#typeerror-articulationview-get-world-poses-got-an-unexpected-keyword-argument-usd>`_ .
+Legacy installations
+--------------------
 
-.. code-block:: bash
-
-    File "/${HOME}/.local/share/ov/pkg/isaac-sim-4.1.0/exts/omni.isaac.core/omni/isaac/core/prims/xform_prim_view.py", line 189, in __init__
-        default_positions, default_orientations = self.get_world_poses(usd=usd)
-    TypeError: ArticulationView.get_world_poses() got an unexpected keyword argument 'usd'
+Older OmniDrones releases target Isaac Sim 4.1.0 (``main`` history), 2023.1.0 (``devel``),
+or 2022.2.0 (``release``). Those versions use Python 3.10 and the deprecated
+``omni.isaac.*`` import paths.
 
 Developer Guide: Working with VSCode
 ------------------------------------
@@ -120,30 +84,30 @@ Developer Guide: Python Environments
     :header-rows: 1
 
     * -
-      - Isaac Sim 2022.*
-      - Isaac Sim 2023.*
+      - Isaac Sim 5.0
+      - Isaac Lab 2.2.*
       - Isaac Sim 4.*
-      - Isaac Lab 1.*
+      - Isaac Sim 2023.*
     * - python
-      - 3.7
-      - 3.10
+      - 3.11
+      - 3.11
       - 3.10
       - 3.10
     * - pytorch
-      - 1.10.0+cu113
+      - 2.7.0+cu128
+      - 2.7.0+cu128
+      - 2.2.2+cu118
       - 2.0.1+cu118
-      - 2.2.2+cu118
-      - 2.2.2+cu118
-    * - rl
-      -
+    * - torchrl
+      - >=0.7.0
+      - >=0.7.0
+      - 0.3.1
       - 0.1.1
-      - 0.3.1
-      - 0.3.1
     * - tensordict
-      -
+      - >=0.7.0
+      - >=0.7.0
+      - 0.3.2
       - 0.1.1
-      - 0.3.2
-      - 0.3.2
 
 Developer Guide: Test Run
 -------------------------
